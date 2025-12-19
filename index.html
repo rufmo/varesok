@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Varesøk</title>
+
+  <script>
+  (function () {
+    const REDIRECT_URL = "https://rumo.no/";
+    const SESSION_KEY = "rumo_access_ok";
+
+    const d = new Date();
+    const day   = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year  = d.getFullYear();
+    const expectedPassword = day + month + year; // DDMMÅÅÅÅ
+
+    const todayKey = SESSION_KEY + "_" + expectedPassword;
+
+    if (sessionStorage.getItem(todayKey) === "1") {
+      document.addEventListener("DOMContentLoaded", () => {
+        document.body.style.display = "block";
+      });
+      return;
+    }
+
+    const entered = prompt("Passord:");
+
+    if (entered !== expectedPassword) {
+      setTimeout(() => window.location.replace(REDIRECT_URL), 50);
+      return;
+    }
+
+    sessionStorage.setItem(todayKey, "1");
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.body.style.display = "block";
+    });
+  })();
+  </script>
+
+  <style>
+    body {
+      display: none;
+      font-family: system-ui, sans-serif;
+      margin: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .topbar a {
+      font-size: 13px;
+      color: #555;
+      text-decoration: none;
+    }
+    .topbar a:hover { text-decoration: underline; }
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 12px;
+      box-sizing: border-box;
+    }
+    .meta {
+      color: #555;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .item {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+    .title { font-weight: 700; }
+    .sub { color:#555; font-size: 13px; margin-top: 4px; }
+    mark { background: #ffeb99; padding: 0 2px; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="topbar">
+      <h1 style="margin:0;">Varesøk</h1>
+      <a href="upload.php">Last opp varer.csv</a>
+    </div>
+
+    <div class="meta" id="loadStatus">Laster CSV…</div>
+
+    <input id="q" placeholder="Søk på varenummer eller beskrivelse…" autocomplete="off" />
+
+    <div class="meta" id="status"></div>
+    <div id="results"></div>
+  </div>
+
+  <script src="app.js?v=7"></script>
+</body>
+</html>
